@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import "./ECDSA.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/solc-0.8/contracts/cryptography/ECDSA.sol";
 
 
 contract WDCT {
@@ -8,19 +8,18 @@ contract WDCT {
     string public symbol   = "WDCT";
     uint8  public decimals = 18;
     
-    uint256 private burnCounter = 0;
+    uint256 public burnCounter = 0;
     uint256 public totalSupply = 0;
-    
-    address private owner;
+    address public owner;
 
     event  Approval(address indexed src, address indexed guy, uint256 wdct);
     event  Transfer(address indexed src, address indexed dst, uint256 wdct);
     event  Minted(address indexed src, uint256 wdct, uint256 id);
-    event  Burned(address indexed src, uint256 wdct, uint256 id);
+    event  Burned(address indexed src, uint256 wdct, string dcoreAddr, uint256 id);
     
     mapping (address => uint256)                       public  balanceOf;
     mapping (address => mapping (address => uint256))  public  allowance;
-    mapping (uint256 => bool)                          private mintedIds;
+    mapping (uint256 => bool)                          public mintedIds;
     
     struct Signature {
         uint8 v;
@@ -35,7 +34,7 @@ contract WDCT {
     
     
     function setOwner(address newOwner) public returns(bool){
-        require(msg.sender == owner);
+        require(msg.sender == owner, "Not owner");
         owner = newOwner;
         return true;
     }
@@ -62,11 +61,11 @@ contract WDCT {
         return true;
     }
     
-    function burn(uint256 wdct) public returns(bool) {
+    function burn(uint256 wdct, string memory dcoreAddr) public returns(bool) {
         require(balanceOf[msg.sender] >= wdct);
         balanceOf[msg.sender] -= wdct;
         totalSupply-=wdct;
-        emit Burned(msg.sender, wdct, burnCounter);
+        emit Burned(msg.sender, wdct, dcoreAddr, burnCounter);
         burnCounter++;
         return true;
     }
@@ -102,3 +101,4 @@ contract WDCT {
         return true;
     }
 }
+

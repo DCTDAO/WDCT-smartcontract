@@ -7,12 +7,12 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract WDCThandler is Ownable {
 	using ECDSA for bytes32;
-	mapping(uint256 => bool) public depositedId;
+	mapping(bytes20 => bool) public depositedTxId;
 
 	event Deposit(address receiver, uint256 amount);
 
 	bytes32 public DOMAIN_SEPARATOR;
-    	bytes32 public constant PRESALE_TYPEHASH = keccak256("deposit(address receiver,uint256 count,uint256 id)");
+    	bytes32 public constant PRESALE_TYPEHASH = keccak256("Deposit(address receiver,uint256 amount,bytes20 txId)");
 
 	ERC20PresetMinterPauser public WDCT;
 
@@ -36,16 +36,16 @@ contract WDCThandler is Ownable {
 	function deposit(
 		address receiver,
 		uint256 amount,
-		uint256 id,
+		bytes20 txId,
 		bytes calldata signature
 	) external {
-		require(!depositedId[id],"WDCThandler: ID already used.");
+		require(!depositedTxId[txId],"WDCThandler: txId already used");
 		//Verify signature
 		bytes32 digest = keccak256(
 			abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR, keccak256(abi.encode(PRESALE_TYPEHASH, 
 			receiver, 
 			amount, 
-			id)))
+			txId)))
 		);
 		address recoveredAddress = digest.recover(signature);
 		require(
@@ -53,7 +53,7 @@ contract WDCThandler is Ownable {
 			"WDCThandler: invalid signature"
 		);
 		// id is used
-		depositedId[id] = true;
+		depositedTxId[txId] = true;
 		//We mint tokens
 		WDCT.mint(receiver, amount);
 		emit Deposit(receiver, amount);	

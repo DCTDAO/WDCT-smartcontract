@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract WDCThandler is Ownable {
 	using ECDSA for bytes32;
-	mapping(bytes20 => bool) public depositedTxId;
+	mapping(string => bool) public depositedTxId;
 
 	event Deposit(address receiver, uint256 amount);
 
@@ -36,7 +36,7 @@ contract WDCThandler is Ownable {
 	function deposit(
 		address receiver,
 		uint256 amount,
-		bytes20 txId,
+		string txId,
 		bytes calldata signature
 	) external {
 		require(!depositedTxId[txId],"WDCThandler: txId already used");

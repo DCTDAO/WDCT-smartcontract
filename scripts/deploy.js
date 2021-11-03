@@ -6,20 +6,29 @@
 const hre = require("hardhat");
 
 async function main() {
-  // Hardhat always runs the compile task when running scripts with its command
-  // line interface.
-  //
-  // If this script is run directly using `node` you may want to call compile
-  // manually to make sure everything is compiled
-  // await hre.run('compile');
+  const wdct = "0xe8f25f2CCF97f3d08f9490dCBa6e67637338c6c8";
+  const dusdt = "0x017801B52F3e40178C75C4B4f19f1a0c8F8A0b78";
+  const dctd = "0x8Db2dBdFB50480FE79F6576deAA4f6E68DcBfb15";
 
-  // We get the contract to deploy
-  const Greeter = await hre.ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  const dctdaoFactory = "0xFBA564939397e71c75c9CbB29E6E23b89e4272BE";
+  
+  const WDCTHANDLER = await hre.ethers.getContractFactory("WDCThandler");
+  const WDCThandler = await WDCTHANDLER.deploy(dusdt, dctd);
+  await WDCThandler.deployed();
+  console.log("WDCTHANDLER addr:", WDCThandler.address);
+  
+  console.log("\n[*] Setting WDCT");
+  await WDCThandler.setWDCT(wdct);
+  console.log("[*] Setting Factory");
+  await WDCThandler.setFactory(dctdaoFactory);
+  console.log("[*] Setting fee in DUSDT");
+  await WDCThandler.setUsdFee(hre.ethers.utils.parseUints("5"), 6); // DUSDT has 6 decimal places
 
-  await greeter.deployed();
-
-  console.log("Greeter deployed to:", greeter.address);
+  console.log("[*] Setting mint ROLE");
+  console.log("[-] Can not set mint role without Permission");
+  //set a role, need permistion for that
+  //const mintRole = await wdct.MINTER_ROLE();
+  //await wdct.grantRole(mintRole, this.WDCThandler.address); 
 }
 
 // We recommend this pattern to be able to use async/await everywhere

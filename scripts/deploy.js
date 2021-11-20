@@ -6,6 +6,7 @@
 const hre = require("hardhat");
 
 async function main() {
+  
   const wdct = "0xe8f25f2CCF97f3d08f9490dCBa6e67637338c6c8";
   const dusdt = "0x017801B52F3e40178C75C4B4f19f1a0c8F8A0b78";
   const dctd = "0x8Db2dBdFB50480FE79F6576deAA4f6E68DcBfb15";
@@ -17,7 +18,7 @@ async function main() {
   await WDCThandler.deployed();
   console.log("WDCTHANDLER addr:", WDCThandler.address);
   
-  console.log("\n[*] Setting WDCT");
+  console.log("[*] Setting WDCT");
   await WDCThandler.setWDCT(wdct);
   console.log("[*] Setting Factory");
   await WDCThandler.setFactory(dctdaoFactory);
@@ -25,10 +26,11 @@ async function main() {
   await WDCThandler.setUsdFee(hre.ethers.utils.parseUints("5"), 6); // DUSDT has 6 decimal places
 
   console.log("[*] Setting mint ROLE");
-  console.log("[-] Can not set mint role without Permission");
+  //console.log("[*] Can not set mint role without Permission");
   //set a role, need permistion for that
-  //const mintRole = await wdct.MINTER_ROLE();
-  //await wdct.grantRole(mintRole, this.WDCThandler.address); 
+  const mintRole = await wdct.MINTER_ROLE();
+  await wdct.grantRole(mintRole, this.WDCThandler.address); 
+  console.log("Finished")
 }
 
 // We recommend this pattern to be able to use async/await everywhere

@@ -34,7 +34,7 @@ async function main() {
   const wdctContract = await ethers.getContractFactory("WDCT");
   const wdct = await wdctContract.attach(wdctaddr);
   const mintRole = await wdct.MINTER_ROLE();
-  await wdct.grantRole(mintRole, this.WDCThandler.address); 
+  await wdct.grantRole(mintRole, WDCThandler.address); 
   console.log("Finished")
 }
 
